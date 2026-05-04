@@ -134,11 +134,11 @@ root/
 │   ├── dataset_setup.py            Kagglehub fetch or local-image fallback
 │   ├── train.py                    4-experiment ablation runner (CLI)
 │   ├── generate_outputs.py         Figures + TEX tables (CLI)
+│   ├── colab_notebook.ipynb        original training notebook (Colab)
+│   ├── test_outputs.ipynb          original output notebook (Colab)
 │   ├── requirements.txt
 │   └── README.md                   source-folder-specific notes
 │
-├── colab_notebook.ipynb            original training notebook (Colab)
-├── test_outputs.ipynb              original output notebook (Colab)
 │
 ├── results/                        per-experiment training artifacts (checkpoints + metrics)
 │   ├── baseline/
