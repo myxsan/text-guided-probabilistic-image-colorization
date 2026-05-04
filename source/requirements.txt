@@ -1,0 +1,16 @@
+torch>=2.0
+torchvision
+numpy
+pandas
+matplotlib
+Pillow
+scikit-image
+scipy
+tqdm
+lpips
+torchmetrics[image]
+transformers
+accelerate
+kornia
+pyarrow
+kagglehub

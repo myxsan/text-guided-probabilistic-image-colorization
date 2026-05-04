@@ -1,0 +1,55 @@
+# ── Python ──────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env
+
+# ── Notebooks ──────────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+
+# ── Project data and artifacts ─────────────────────────────────────────────
+# Image dataset (downloaded by source.dataset_setup at runtime)
+data/
+
+# On-disk caches (text embeddings, split indices)
+cache/
+
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.log
+*.lot
+*.out
+*.synctex.gz
+*.toc
+*.brf
+
+# ── OS / IDE ───────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ── Misc ───────────────────────────────────────────────────────────────────
+*.bak
+*.tmp
+.colab_secrets

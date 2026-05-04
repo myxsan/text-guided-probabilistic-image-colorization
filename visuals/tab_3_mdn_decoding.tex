@@ -1,0 +1,16 @@
+\begin{table}[t]
+\centering
+\caption{MDN decoding strategies on the test set.}
+\label{tab:mdn}
+\small
+\begin{tabular}{lccccc}
+\toprule
+Decoding & PSNR$\uparrow$ & SSIM$\uparrow$ & LPIPS$\downarrow$ & $\Delta E$$\downarrow$ & Chroma$\uparrow$ \\
+\midrule
+Expected ($\mathbb{E}[ab]$) & \textbf{22.53} & \textbf{0.9273} & \textbf{0.1642} & 9.02 & 0.638 \\
+MAP ($\arg\max \pi$) & 22.13 & 0.9148 & 0.1806 & \textbf{8.83} & 0.504 \\
+Best-of-5 & 19.91 & 0.6083 & 0.2577 & 12.07 & \textbf{0.963} \\
+Sample ($T$=1.0) & 19.91 & 0.6082 & 0.2577 & 12.07 & \textbf{0.963} \\
+\bottomrule
+\end{tabular}
+\end{table}

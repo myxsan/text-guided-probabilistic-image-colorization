@@ -1,0 +1,17 @@
+\begin{table}[t]
+\centering
+\caption{Per-category $\Delta E$ (CIEDE2000, lower is better). Best in \textbf{bold}.}
+\label{tab:category}
+\small
+\begin{tabular}{lcccccc}
+\toprule
+Category & N & Baseline & Ours & Ours+$\mathcal{L}_c$ & Ours+MDN & Best $\Delta$ \\
+\midrule
+Snow & 8 & 8.21 & 7.46 & 6.91 & \textbf{6.52} & $-$20.6\% \\
+Vegetation & 8 & 9.43 & 8.26 & \textbf{7.66} & 8.59 & $-$18.8\% \\
+Animals & 8 & 9.99 & 9.15 & 9.20 & \textbf{8.92} & $-$10.7\% \\
+Sky & 8 & 8.19 & 8.13 & \textbf{7.82} & 8.02 & $-$4.5\% \\
+Urban & 8 & 7.05 & 7.17 & \textbf{7.03} & 7.84 & $-$0.2\% \\
+\bottomrule
+\end{tabular}
+\end{table}

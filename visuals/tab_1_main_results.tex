@@ -1,0 +1,18 @@
+\begin{table}[t]
+\centering
+\caption{Ablation study on COCO 2017 test set. Best values in \textbf{bold}.}
+\label{tab:main}
+\small
+\begin{tabular}{lcccccccc}
+\toprule
+Model & Text & $\mathcal{L}_c$ & Head & PSNR$\uparrow$ & SSIM$\uparrow$ & LPIPS$\downarrow$ & $\Delta E$$\downarrow$ & FID$\downarrow$ \\
+\midrule
+Baseline & \ding{55} & \ding{55} & Reg & 22.03 & 0.9155 & 0.1609 & 9.31 & 47.7 \\
+Ours & \ding{51} & \ding{55} & Reg & 22.23 & 0.9193 & \textbf{0.1539} & 8.98 & 45.8 \\
+Ours + $\mathcal{L}_c$ & \ding{51} & \ding{51} & Reg & 22.35 & 0.9223 & 0.1548 & \textbf{8.80} & \textbf{43.3} \\
+Ours + MDN & \ding{51} & \ding{55} & MDN & \textbf{22.53} & \textbf{0.9273} & 0.1642 & 9.02 & 55.8 \\
+\midrule
+$\Delta$ & & & & +0.20 & +0.0038 & -0.0070 & -0.33 & -1.9 \\
+\bottomrule
+\end{tabular}
+\end{table}
