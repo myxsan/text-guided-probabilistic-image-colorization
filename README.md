@@ -149,17 +149,30 @@ root/
 │   ├── best_text_help/
 │   └── *.png                       in-notebook diagnostic figures
 │
-└── visuals/                        outputs from generate_outputs.py
-    ├── fig_1_architecture.pdf
-    ├── fig_2_qualitative_grid.pdf
-    ├── fig_3_chroma_recovery.pdf
-    ├── fig_4_mdn_diversity.pdf
-    ├── fig_5_1_training_deltae.pdf
-    ├── fig_5_2_training_psnr.pdf
-    ├── fig_6_caption_examples.pdf
-    ├── tab_1_main_results.{tex,csv}
-    ├── tab_2_per_category.{tex,csv}
-    └── tab_3_mdn_decoding.{tex,csv}
+├── visuals/                        outputs from generate_outputs.py
+│   ├── fig_1_architecture.pdf
+│   ├── fig_2_qualitative_grid.pdf
+│   ├── fig_3_chroma_recovery.pdf
+│   ├── fig_4_mdn_diversity.pdf
+│   ├── fig_5_1_training_deltae.pdf
+│   ├── fig_5_2_training_psnr.pdf
+│   ├── fig_6_caption_examples.pdf
+│   ├── tab_1_main_results.{tex,csv}
+│   ├── tab_2_per_category.{tex,csv}
+│   └── tab_3_mdn_decoding.{tex,csv}
+│
+├── ui/                             Streamlit demo for the trained models
+│   ├── app.py                      upload a grayscale image, get the colorized output
+│   └── README.md
+│
+├── page/                           static HTML/CSS/JS project landing page
+│   ├── index.html                  single-page paper presentation
+│   ├── styles.css                  poster-matching palette (cream / navy / gold)
+│   ├── script.js                   BibTeX copy + on-scroll reveal
+│   └── assets/                     figures copied from visuals/
+│
+└── example-images/                 hand-picked grayscale inputs for quick demos
+    └── *.jpg                       drop these into the Streamlit UI
 
 ```
 

@@ -1,0 +1,478 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Project page · matches the SİU 2026 / TEKNOFEST poster palette:
+   cream/beige background, navy headers, pale-blue cards, gold accents.
+   ──────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --bg:           #f5ecd4;   /* warm cream — poster background */
+  --bg-2:         #ebe1c4;   /* slightly deeper cream for hero */
+  --card:         #e6edf2;   /* pale blue card surface */
+  --card-2:       #d8e3ec;   /* slightly stronger card for subcard */
+  --ink:          #15263d;   /* deep navy text */
+  --ink-soft:     #2c3e5f;   /* softer navy */
+  --ink-muted:    #56678a;   /* muted navy for captions */
+  --accent:       #1E3A5F;   /* navy accent */
+  --accent-2:     #2b4d7a;   /* lighter navy */
+  --accent-dim:   #142b48;   /* darker navy */
+  --link:         #2b4d7a;
+  --link-hover:   #1E3A5F;
+  --rule:         rgba(21,38,61,0.12);
+  --shadow:       0 2px 14px rgba(21,38,61,0.07);
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+/* ── Accent strips: glowing rainbow gradient (animated) ───────────────── */
+
+.accent-strip {
+  height: 6px;
+  background: linear-gradient(
+    90deg,
+    #ff3b8a 0%,
+    #ff7a3d 15%,
+    #f0c93d 30%,
+    #4dd683 45%,
+    #3dbef0 60%,
+    #6a6cff 75%,
+    #c44dff 90%,
+    #ff3b8a 100%
+  );
+  background-size: 200% 100%;
+  position: relative;
+  animation: rainbow-shift 8s linear infinite;
+}
+.accent-strip::after {
+  /* soft outer glow */
+  content: "";
+  position: absolute;
+  inset: -10px 0;
+  background: inherit;
+  background-size: inherit;
+  filter: blur(14px);
+  opacity: 0.55;
+  pointer-events: none;
+  animation: rainbow-shift 8s linear infinite;
+}
+/* Bottom strip sits flush against the page edge — glow extends only upward
+   so it doesn't bleed past the bottom of the page. */
+.accent-strip.bottom { margin-top: 0; }
+.accent-strip.bottom::after {
+  inset: -10px 0 0 0;
+}
+body { overflow-x: hidden; }
+
+@keyframes rainbow-shift {
+  0%   { background-position:   0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+/* ── Hero ──────────────────────────────────────────────────────────────── */
+
+.hero {
+  background: linear-gradient(180deg, var(--bg-2) 0%, var(--bg) 100%);
+  border-bottom: 1px solid var(--rule);
+  padding: 64px 24px 2rem;
+}
+.hero-inner {
+  max-width: 980px;
+  margin: 0 auto;
+  text-align: center;
+}
+.affiliation {
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 18px;
+  font-weight: 500;
+}
+.paper-title {
+  font-family: "Crimson Pro", "Georgia", serif;
+  font-weight: 700;
+  font-size: clamp(32px, 4.6vw, 52px);
+  line-height: 1.16;
+  color: var(--ink);
+  margin: 0 0 24px 0;
+  letter-spacing: -0.4px;
+}
+.title-emph {
+  background: linear-gradient(90deg, var(--accent-dim), var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  font-style: italic;
+}
+.authors {
+  font-size: 16.5px;
+  color: var(--ink-soft);
+  font-weight: 500;
+  margin-bottom: 18px;
+}
+.authors .dot { color: var(--accent); margin: 0 4px; font-weight: 700; }
+.venue-badges {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 26px;
+}
+.badge {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  padding: 5px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  background: rgba(30,58,95,0.06);
+  color: var(--accent);
+  text-transform: uppercase;
+}
+.link-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-top: 2rem;
+}
+.pill-link {
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--bg);
+  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  transition: background .18s ease, transform .18s ease;
+}
+.pill-link:hover {
+  background: var(--accent-dim);
+  transform: translateY(-1px);
+}
+
+/* ── Section cards ─────────────────────────────────────────────────────── */
+
+.card {
+  max-width: 980px;
+  margin: 28px auto;
+  padding: 38px 44px;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  position: relative;
+}
+.card::before {
+  /* thin gold rule near the top — echoes poster header lines */
+  content: "";
+  position: absolute;
+  top: 18px; left: 44px; right: 44px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  opacity: 0.45;
+}
+
+.card h2 {
+  font-family: "Crimson Pro", serif;
+  font-weight: 700;
+  font-size: 26px;
+  letter-spacing: -0.2px;
+  color: var(--ink);
+  margin: 6px 0 18px;
+  text-transform: uppercase;
+}
+.card h2::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 22px;
+  background: var(--accent);
+  margin-right: 12px;
+  vertical-align: -4px;
+  border-radius: 2px;
+}
+
+.card h3 {
+  font-family: "Crimson Pro", serif;
+  font-size: 18px;
+  color: var(--ink-soft);
+  margin: 22px 0 8px;
+}
+
+.card p {
+  color: var(--ink-soft);
+  margin: 0 0 14px 0;
+}
+.card p strong { color: var(--ink); }
+
+.card a { color: var(--link); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.card a:hover { color: var(--link-hover); }
+
+.bullets {
+  padding-left: 22px;
+  margin: 8px 0;
+  color: var(--ink-soft);
+}
+.bullets li { margin: 6px 0; }
+
+/* ── Keywords ──────────────────────────────────────────────────────────── */
+.keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+.kw {
+  font-size: 12.5px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(21,38,61,0.06);
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+
+/* ── Subcards / grids ──────────────────────────────────────────────────── */
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin: 14px 0;
+}
+.grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  margin: 8px 0;
+}
+.subcard, .discussion-block {
+  background: var(--card-2);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 16px 18px;
+}
+.subcard h3, .discussion-block h3 {
+  margin-top: 0;
+  font-size: 16px;
+  color: var(--ink);
+}
+.subcard p, .discussion-block p {
+  font-size: 14.5px;
+  margin: 8px 0;
+}
+
+.variants ol {
+  margin: 8px 0 0 0;
+  padding-left: 22px;
+}
+.variants li {
+  margin: 6px 0;
+  color: var(--ink-soft);
+}
+
+/* ── Equations ─────────────────────────────────────────────────────────── */
+
+.eq {
+  font-family: "JetBrains Mono", "Menlo", monospace;
+  font-size: 14px;
+  line-height: 1.9;
+  background: rgba(21,38,61,0.05);
+  border-left: 3px solid var(--accent);
+  padding: 12px 14px;
+  border-radius: 6px;
+  color: var(--ink);
+  overflow-x: auto;
+}
+
+/* ── Figures ───────────────────────────────────────────────────────────── */
+
+.figure {
+  margin: 18px 0 6px;
+  text-align: center;
+}
+.figure img,
+.figure video {
+  width: 100%;
+  max-width: 880px;
+  height: auto;
+  background: #fff;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: var(--shadow);
+}
+.figure video {
+  display: block;
+  margin: 0 auto;
+}
+.figure figcaption {
+  margin-top: 10px;
+  font-size: 13.5px;
+  color: var(--ink-muted);
+  font-style: italic;
+}
+.figure figcaption strong { font-style: normal; color: var(--ink-soft); }
+.caption-small {
+  font-size: 13.5px;
+  color: var(--ink-muted);
+  font-style: italic;
+  margin-top: 6px;
+}
+
+/* ── Tables ────────────────────────────────────────────────────────────── */
+
+.table-title {
+  font-family: "Crimson Pro", serif;
+  font-size: 17px;
+  color: var(--ink);
+  margin: 24px 0 10px;
+}
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.5);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+thead th {
+  background: var(--ink);
+  color: var(--bg);
+  font-weight: 600;
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 13px;
+  letter-spacing: 0.4px;
+}
+thead th:first-child { border-top-left-radius: 9px; }
+thead th:last-child { border-top-right-radius: 9px; }
+tbody td {
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink-soft);
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:nth-child(even) { background: rgba(21,38,61,0.025); }
+tbody tr:hover { background: rgba(30,58,95,0.06); }
+tbody td strong { color: var(--accent); }
+tr.delta td {
+  background: rgba(30,58,95,0.08);
+  font-weight: 600;
+  color: var(--ink);
+  border-top: 2px solid var(--accent);
+}
+
+/* ── Code / BibTeX block ───────────────────────────────────────────────── */
+
+.bib {
+  background: var(--ink);
+  color: #e6edf2;
+  padding: 18px 20px;
+  border-radius: 8px;
+  font-family: "JetBrains Mono", "Menlo", monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-x: auto;
+  margin: 8px 0 12px;
+}
+code {
+  font-family: "JetBrains Mono", "Menlo", monospace;
+  font-size: 0.92em;
+  background: rgba(21,38,61,0.07);
+  padding: 1px 5px;
+  border-radius: 4px;
+  color: var(--ink);
+}
+.copy-btn {
+  background: var(--accent);
+  color: var(--ink);
+  border: none;
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-weight: 600;
+  font-size: 13.5px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background .18s ease, transform .18s ease;
+  font-family: inherit;
+}
+.copy-btn:hover {
+  background: var(--accent-2);
+  transform: translateY(-1px);
+}
+.copy-btn.copied {
+  background: var(--ink);
+  color: var(--accent-2);
+}
+
+/* ── References list ───────────────────────────────────────────────────── */
+
+.refs {
+  padding-left: 24px;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+}
+.refs li {
+  margin: 8px 0;
+  line-height: 1.55;
+}
+.refs em { color: var(--ink); font-style: italic; }
+
+/* ── Footer ────────────────────────────────────────────────────────────── */
+
+.site-footer {
+  background: var(--bg-2);
+  border-top: 1px solid var(--rule);
+  padding: 36px 24px 36px;
+  margin-top: 40px;
+}
+.footer-inner {
+  max-width: 980px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 24px;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+}
+.footer-right { text-align: right; }
+.dim { opacity: 0.6; }
+
+/* ── Math (inline) ─────────────────────────────────────────────────────── */
+.math {
+  font-family: "Crimson Pro", serif;
+  font-style: italic;
+}
+
+/* ── Responsive ────────────────────────────────────────────────────────── */
+
+@media (max-width: 720px) {
+  .card {
+    padding: 28px 22px;
+    margin: 20px 14px;
+  }
+  .card::before { left: 22px; right: 22px; }
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .hero { padding: 44px 18px 40px; }
+  .footer-inner { flex-direction: column; }
+  .footer-right { text-align: left; }
+}

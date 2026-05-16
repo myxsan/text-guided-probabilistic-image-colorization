@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Resolving Color Ambiguity in Image Colorization — Project Page</title>
+<meta name="description" content="A caption-guided, probabilistic colorization model that resolves color ambiguity in grayscale images using BLIP captions, CLIP cross-attention, and a Mixture Density Network." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- Decorative top accent strip (echoes the poster banding) -->
+<div class="accent-strip top"></div>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="affiliation">
+      Faculty of Engineering and Natural Sciences · Department of Software Engineering
+    </div>
+    <h1 class="paper-title">
+      Resolving Color Ambiguity in Image Colorization through
+      <span class="title-emph">Caption Guidance</span> and
+      <span class="title-emph">Probabilistic Decoding</span>
+    </h1>
+    <div class="authors">
+      <span>Musa Yüksel</span>
+      <span class="dot">·</span>
+      <span>Rojda Süslü</span>
+      <span class="dot">·</span>
+      <span>Sena Dilan Çakır</span>
+      <span class="dot">·</span>
+      <span>Fırat Özcan</span>
+    </div>
+    <div class="venue-badges">
+      Submitted to: 
+      <span class="badge">SİU 2026</span>
+      <span class="badge">TEKNOFEST</span>
+    </div>
+
+<figure class="figure">
+  <video src="assets/ui.mp4" autoplay loop muted playsinline preload="auto"></video>
+</figure>
+
+    <nav class="link-row">
+      <a class="pill-link" href="#abstract">Abstract</a>
+      <a class="pill-link" href="#motivation">Motivation</a>
+      <a class="pill-link" href="#method">Method</a>
+      <a class="pill-link" href="#demo">Demo</a>
+      <a class="pill-link" href="#captions">Captions</a>
+      <a class="pill-link" href="#results">Qualitative</a>
+      <a class="pill-link" href="#quantitative">Quantitative</a>
+      <a class="pill-link" href="#chroma">Chroma</a>
+      <a class="pill-link" href="#mdn">MDN</a>
+      <a class="pill-link" href="#training">Training</a>
+      <a class="pill-link" href="#discussion">Discussion</a>
+      <a class="pill-link" href="#conclusion">Conclusion</a>
+      <a class="pill-link" href="#references">References</a>
+      <!-- <a class="pill-link" href="#cite">Cite</a> — uncomment once the paper is published -->
+    </nav>
+
+</div>
+</header>
+
+<!-- Abstract -->
+<section id="abstract" class="card">
+  <h2>Abstract</h2>
+  <p>
+    Grayscale image colorization is an inherently <strong>ambiguous mapping problem</strong>:
+    a single luminance value can correspond to many plausible colors. To resolve this
+    ambiguity, we investigate two complementary mechanisms — <em>semantic text
+    conditioning</em> via automatically generated image captions, and <em>probabilistic
+    output modeling</em> via a Mixture Density Network (MDN). We compare four model
+    variants on a COCO 2017 subset across multiple perceptual metrics to characterise
+    the trade-offs between pixel-level fidelity and distributional realism. Although
+    multimodal color distributions are typically difficult to model in a regression
+    framework, the combination of caption-guided conditioning with an MDN output head
+    is effective in reducing color ambiguity.
+  </p>
+  <div class="keywords">
+    <span class="kw">image colorization</span>
+    <span class="kw">text conditioning</span>
+    <span class="kw">cross-attention</span>
+    <span class="kw">mixture density network</span>
+  </div>
+</section>
+
+<!-- Motivation -->
+<section id="motivation" class="card">
+  <h2>Motivation</h2>
+  <p>
+    Pixel-only regression objectives collapse to the conditional mean — washed-out,
+    brownish outputs. Image colorization is <strong>ill-posed</strong>: a grayscale
+    photograph of a car carries no signal about whether the vehicle was red, blue,
+    or green. Visual cues alone often fail in regions of high color uncertainty such
+    as clothing and vegetation. Our hypothesis is that natural-language captions
+    generated from the grayscale input can <strong>inject semantic context</strong>
+    that pixels alone cannot, guiding color prediction in ambiguous regions.
+  </p>
+  <ul class="bullets">
+    <li><strong>Caption guidance.</strong> BLIP describes the grayscale image; CLIP encodes the tags into a 512-dim embedding injected via cross-attention.</li>
+    <li><strong>Chroma loss <span class="math">𝓛<sub>c</sub></span>.</strong> Directly penalises desaturation regardless of hue accuracy.</li>
+    <li><strong>Probabilistic decoding.</strong> A K=5 Mixture Density Network captures multi-modal color distributions.</li>
+  </ul>
+</section>
+
+<!-- Method -->
+<section id="method" class="card">
+  <h2>Method</h2>
+  <p>
+    The pipeline combines semantic conditioning with probabilistic decoding. A
+    <strong>BLIP captioner</strong> describes the grayscale input;
+    <strong>CLIP</strong> encodes the caption into a 512-d embedding, which is
+    injected into a U-Net decoder via <strong>cross-attention</strong>. An
+    <strong>MDN head</strong> predicts a per-pixel K=5 Gaussian mixture over
+    (a, b) chrominance space (π, μ, σ), while a 70×70 PatchGAN discriminator
+    provides adversarial supervision on the final RGB output.
+  </p>
+
+  <figure class="figure">
+    <img src="assets/architecture.png" alt="Text-conditioned U-Net architecture" />
+    <figcaption>
+      <strong>Figure 1.</strong> Proposed text-guided colorization architecture.
+      The L-channel encoder/decoder (top) is augmented at three decoder scales by a
+      <code>TextConditionedBlock</code> consuming 512-d CLIP token embeddings.
+    </figcaption>
+  </figure>
+
+  <div class="grid-2">
+    <div class="subcard">
+      <h3>Text Conditioning Block</h3>
+      <p>Each block applies cross-attention followed by FiLM modulation:</p>
+      <div class="eq">
+        Q = W<sub>Q</sub> h<sub>spatial</sub>,
+        K = W<sub>K</sub> e,
+        V = W<sub>V</sub> e<br>
+        h′ = h + MHA(Q, K, V)<br>
+        h″ = h′ · (1 + γ(ē)) + β(ē)
+      </div>
+      <p class="caption-small">Both linear FiLM layers are zero-initialised so text influence starts at zero, then grows during training.</p>
+    </div>
+    <div class="subcard">
+      <h3>MDN Output Head</h3>
+      <p>Per pixel the head emits K Gaussian components for (a, b); the loss is the negative log-likelihood:</p>
+      <div class="eq">
+        𝓛<sub>MDN</sub> = −log Σ<sub>k=1..K</sub> π<sub>k</sub> · 𝒩(ab; μ<sub>k</sub>, σ<sub>k</sub><sup>2</sup>I)
+      </div>
+      <p class="caption-small">K = 5 components captures multi-modal color distributions instead of collapsing to a single point.</p>
+    </div>
+  </div>
+
+  <div class="variants">
+    <h3>Model Variants</h3>
+    <ol>
+      <li><strong>Baseline (Reg)</strong> — text-free <code>UNetColorizer</code>, regression head.</li>
+      <li><strong>Ours (Text + Reg)</strong> — <code>UNetTextColorizer</code> with cross-attention in Dec1 (<code>token_attn</code>), regression head.</li>
+      <li><strong>Ours + 𝓛<sub>c</sub></strong> — Ours with an additional chroma loss <code>𝓛<sub>c</sub> = ‖|C<sub>pred</sub>| − |C<sub>gt</sub>|‖<sub>1</sub></code>.</li>
+      <li><strong>Ours + MDN</strong> — cross-attention + FiLM at Dec1–Dec3 (<code>multiscale_film</code>), K=5 MDN head.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- Caption examples -->
+<section id="captions" class="card">
+  <h2>From Caption to Color</h2>
+  <p>
+    Each grayscale image is described by BLIP, encoded by CLIP, and used to condition
+    the U-Net decoder. The model learns associations such as <em>"jungle" implies green</em>,
+    <em>"road" implies grey</em>, <em>"soccer" implies grass and skin</em>.
+  </p>
+  <figure class="figure">
+    <img src="assets/caption_examples.png" alt="BLIP caption examples on grayscale inputs" />
+    <figcaption>
+      <strong>Figure 2.</strong> BLIP captions generated directly from the grayscale
+      input (italic) and the filtered tag bag (bold blue) that is fed to CLIP.
+    </figcaption>
+  </figure>
+</section>
+
+<!-- Qualitative results -->
+<section id="results" class="card">
+  <h2>Qualitative Results</h2>
+  <p>
+    Side-by-side comparison across five semantic categories. Text-conditioned models
+    produce more realistic colors in snow and vegetation rows. <em>Ours + 𝓛<sub>c</sub></em>
+    delivers the clearest chroma improvements in green vegetation and blue sky regions;
+    urban scenes look similar across all models.
+  </p>
+  <figure class="figure">
+    <img src="assets/qualitative.png" alt="Qualitative grid: input, GT, baseline, ours, +chroma, +MDN" />
+    <figcaption>
+      <strong>Figure 3.</strong> Per-category qualitative grid: grayscale input, ground truth,
+      baseline, ours, ours + 𝓛<sub>c</sub>, ours + MDN.
+    </figcaption>
+  </figure>
+</section>
+
+<!-- Main results table -->
+<section id="quantitative" class="card">
+  <h2>Quantitative Results</h2>
+
+  <h3 class="table-title">Table 1 · Main Ablation on the COCO 2017 Test Set</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Model</th>
+          <th>Text</th>
+          <th>𝓛<sub>c</sub></th>
+          <th>Head</th>
+          <th>PSNR ↑</th>
+          <th>SSIM ↑</th>
+          <th>ΔE ↓</th>
+          <th>FID ↓</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Baseline</td><td>✗</td><td>✗</td><td>Reg</td><td>22.03</td><td>0.9155</td><td>9.31</td><td>47.7</td></tr>
+        <tr><td>Ours</td><td>✓</td><td>✗</td><td>Reg</td><td>22.23</td><td>0.9193</td><td>8.98</td><td>45.8</td></tr>
+        <tr><td>Ours + 𝓛<sub>c</sub></td><td>✓</td><td>✓</td><td>Reg</td><td>22.35</td><td>0.9223</td><td><strong>8.80</strong></td><td><strong>43.3</strong></td></tr>
+        <tr><td>Ours + MDN</td><td>✓</td><td>✗</td><td>MDN</td><td><strong>22.53</strong></td><td><strong>0.9273</strong></td><td>9.02</td><td>55.8</td></tr>
+        <tr class="delta">
+          <td>Δ (Ours − Baseline)</td><td></td><td></td><td></td>
+          <td>+0.20</td><td>+0.0038</td><td>−0.33</td><td>−1.9</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="caption-small">
+    Text conditioning improves PSNR (+0.20 dB), SSIM (+0.0038), ΔE (−0.33) and FID (−1.9).
+    Chroma loss reaches the lowest FID (43.3); the MDN head reaches the highest PSNR (22.53 dB).
+  </p>
+
+  <h3 class="table-title">Table 2 · ΔE by Semantic Category</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>N</th>
+          <th>Baseline</th>
+          <th>Ours</th>
+          <th>+ 𝓛<sub>c</sub></th>
+          <th>+ MDN</th>
+          <th>Best Δ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Snow</td><td>8</td><td>8.21</td><td>7.46</td><td>6.91</td><td><strong>6.52</strong></td><td><strong>−20.6%</strong></td></tr>
+        <tr><td>Vegetation</td><td>8</td><td>9.43</td><td>8.26</td><td><strong>7.66</strong></td><td>8.59</td><td>−18.8%</td></tr>
+        <tr><td>Animals</td><td>8</td><td>9.99</td><td>9.15</td><td>9.20</td><td><strong>8.92</strong></td><td>−10.7%</td></tr>
+        <tr><td>Sky</td><td>8</td><td>8.19</td><td>8.13</td><td><strong>7.82</strong></td><td>8.02</td><td>−4.5%</td></tr>
+        <tr><td>Urban</td><td>8</td><td><strong>7.05</strong></td><td>7.17</td><td>7.03</td><td>7.84</td><td>−0.2%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="caption-small">
+    Caption guidance helps most in semantically-rich categories with concentrated color
+    statistics (snow, vegetation, animals). Urban scenes are essentially achromatic
+    structure — text adds little.
+  </p>
+</section>
+
+<!-- Chroma -->
+<section id="chroma" class="card">
+  <h2>Chroma Recovery</h2>
+  <p>
+    The baseline frequently suffers from <strong>chroma collapse</strong>: predicted
+    saturation drops well below the ground truth, producing the characteristic
+    washed-out look of regression colorizers. The chroma loss 𝓛<sub>c</sub> directly
+    penalises this mismatch and recovers a saturation ratio close to 1.0.
+  </p>
+  <figure class="figure">
+    <img src="assets/chroma_recovery.png" alt="Chroma recovery comparison" />
+    <figcaption>
+      <strong>Figure 4.</strong> Per-cell C ratios: baseline (red) low saturation;
+      Ours + 𝓛<sub>c</sub> (green) recovers saturation close to the original.
+    </figcaption>
+  </figure>
+</section>
+
+<!-- MDN diversity -->
+<section id="mdn" class="card">
+  <h2>MDN Diversity Sampling</h2>
+  <p>
+    Unlike a regression head, the MDN exposes the underlying multi-modal distribution.
+    Sampling temperature controls the trade-off between conservative outputs (T = 0.5)
+    and bolder color choices (T = 1.5). Expected-value decoding gives the best
+    pixel-level fidelity; sampling-based decoding gives the highest chroma at the cost
+    of PSNR.
+  </p>
+  <figure class="figure">
+    <img src="assets/mdn_diversity.png" alt="MDN diversity sampling output" />
+    <figcaption>
+      <strong>Figure 5.</strong> MDN diversity sampling. Left to right: grayscale,
+      GT, E[ab], T=0.5, T=1.0, T=1.5.
+    </figcaption>
+  </figure>
+
+  <h3 class="table-title">Table 3 · MDN Decoding Strategies</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Decoding</th>
+          <th>PSNR ↑</th>
+          <th>SSIM ↑</th>
+          <th>LPIPS ↓</th>
+          <th>ΔE ↓</th>
+          <th>Chroma ↑</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>𝔼[ab] (Expected)</td><td><strong>22.53</strong></td><td><strong>0.9273</strong></td><td><strong>0.164</strong></td><td>9.02</td><td>0.638</td></tr>
+        <tr><td>MAP (arg max π)</td><td>22.13</td><td>0.9148</td><td>0.181</td><td><strong>8.83</strong></td><td>0.504</td></tr>
+        <tr><td>Best-of-5</td><td>19.91</td><td>0.6083</td><td>0.258</td><td>12.07</td><td><strong>0.963</strong></td></tr>
+        <tr><td>Sample (T = 1.0)</td><td>19.91</td><td>0.6082</td><td>0.258</td><td>12.07</td><td>0.963</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Training dynamics -->
+<section id="training" class="card">
+  <h2>Training Dynamics</h2>
+  <div class="grid-2">
+    <figure class="figure">
+      <img src="assets/training_deltae.png" alt="Validation ΔE curves" />
+      <figcaption><strong>Figure 6a.</strong> Validation ΔE.</figcaption>
+    </figure>
+    <figure class="figure">
+      <img src="assets/training_psnr.png" alt="Validation PSNR curves" />
+      <figcaption><strong>Figure 6b.</strong> Validation PSNR. The dot (•) marks the early-stopping epoch.</figcaption>
+    </figure>
+  </div>
+  <p class="caption-small">
+    Text-conditioned models converge faster; the baseline plateaus around epoch 15.
+    The MDN model trains with wider variance but ultimately reaches the highest PSNR.
+  </p>
+</section>
+
+<!-- Discussion -->
+<section id="discussion" class="card">
+  <h2>Discussion</h2>
+  <div class="grid-3">
+    <div class="discussion-block">
+      <h3>Category dependence</h3>
+      <p>Text helps where color ambiguity is high — snow (−20.6%), vegetation (−18.8%), animals (−10.7%). Urban scenes (−0.2%) gain almost nothing: color there is determined by <em>structural</em>, not <em>semantic</em>, context.</p>
+    </div>
+    <div class="discussion-block">
+      <h3>FID vs. pixel metrics</h3>
+      <p>Expected-value MDN decoding maximises pixel metrics but degrades FID (55.8) by averaging the K components. 𝓛<sub>c</sub> produces the most realistic color distribution (FID 43.3). Color accuracy and distributional realism are <strong>competing objectives</strong>.</p>
+    </div>
+    <div class="discussion-block">
+      <h3>MDN as creative tool</h3>
+      <p>Sampling-based decoding sacrifices pixel-level accuracy but reaches near-original chroma (0.963). This makes the MDN particularly suitable for photo restoration and artistic re-interpretation.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Conclusion -->
+<section id="conclusion" class="card">
+  <h2>Conclusion</h2>
+  <p>
+    We presented a caption-guided colorization framework combining BLIP captioning,
+    CLIP text embeddings, and cross-attention conditioning with a probabilistic MDN
+    output head. Experiments on COCO 2017 show that caption guidance improves all
+    metrics over the baseline, with the largest gains in semantically constrained
+    categories. Chroma loss maximises distributional realism (FID 43.3), while the
+    MDN head maximises pixel fidelity (PSNR 22.53 dB) and enables diverse
+    colorization sampling. These results confirm that language can effectively
+    reduce color ambiguity where pixels alone cannot. Future work will explore
+    stronger language models, class-conditional MDN components and human
+    evaluation protocols.
+  </p>
+</section>
+
+<!-- BibTeX — paper not yet published; bring this section back once the proceedings go live.
+<section id="cite" class="card">
+  <h2>Cite</h2>
+  <pre class="bib"><code>@inproceedings{yuksel2026colorization,
+  title     = {Resolving Color Ambiguity in Image Colorization through Caption Guidance and Probabilistic Decoding},
+  author    = {Yüksel, Musa and Süslü, Rojda and Çakır, Sena Dilan and Özcan, Fırat},
+  booktitle = {Proceedings of the IEEE 34th Signal Processing and Communications Applications Conference (SİU)},
+  year      = {2026}
+}</code></pre>
+  <button class="copy-btn" id="copy-bib" aria-label="Copy BibTeX">Copy BibTeX</button>
+</section>
+-->
+
+
+<!-- References -->
+<section id="references" class="card">
+  <h2>References</h2>
+  <ol class="refs">
+    <li>R. Zhang, P. Isola, A. A. Efros. "Colorful image colorization." <em>ECCV</em>, 2016.</li>
+    <li>S. Iizuka, E. Simo-Serra, H. Ishikawa. "Let there be color! Joint end-to-end learning of global and local image priors for automatic image colorization with simultaneous classification." <em>ACM TOG</em>, 2016.</li>
+    <li>G. Larsson, M. Maire, G. Shakhnarovich. "Learning representations for automatic colorization." <em>ECCV</em>, 2016.</li>
+    <li>M. Kumar, D. Weissenborn, N. Nal. "Colorization transformer." <em>ICLR</em>, 2021.</li>
+    <li>J. Li, D. Li, C. Xiong, S. Hoi. "BLIP: Bootstrapping language-image pre-training." <em>ICML</em>, 2022.</li>
+    <li>A. Radford <em>et al.</em> "Learning transferable visual models from natural language supervision." <em>ICML</em>, 2021.</li>
+    <li>A. Vaswani <em>et al.</em> "Attention is all you need." <em>NeurIPS</em>, 2017.</li>
+    <li>C. M. Bishop. "Mixture density networks." Aston Univ. Tech. Rep., 1994.</li>
+    <li>E. Perez, F. Strub, H. de Vries, V. Dumoulin, A. Courville. "FiLM: Visual reasoning with a general conditioning layer." <em>AAAI</em>, 2018.</li>
+    <li>I. Goodfellow <em>et al.</em> "Generative adversarial nets." <em>NeurIPS</em>, 2014.</li>
+    <li>P. Isola, J.-Y. Zhu, T. Zhou, A. A. Efros. "Image-to-image translation with conditional adversarial networks." <em>CVPR</em>, 2017.</li>
+    <li>Z. Wang <em>et al.</em> "Image quality assessment: From error visibility to structural similarity." <em>IEEE TIP</em>, 2004.</li>
+    <li>R. Zhang <em>et al.</em> "The unreasonable effectiveness of deep features as a perceptual metric." <em>CVPR</em>, 2018.</li>
+    <li>M. Heusel <em>et al.</em> "GANs trained by a two time-scale update rule converge to a local Nash equilibrium." <em>NeurIPS</em>, 2017.</li>
+  </ol>
+</section>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-left">
+      <strong>Ankara Yıldırım Beyazıt University</strong><br>
+      Faculty of Engineering and Natural Sciences<br>
+      Department of Software Engineering
+    </div>
+    <div class="footer-right">
+      <span class="dim">© 2026 The Authors</span>
+    </div>
+  </div>
+</footer>
+
+<div class="accent-strip bottom"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
