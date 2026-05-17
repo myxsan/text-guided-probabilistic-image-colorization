@@ -165,14 +165,14 @@ root/
 │   ├── app.py                      upload a grayscale image, get the colorized output
 │   └── README.md
 │
-├── page/                           static HTML/CSS/JS project landing page
-│   ├── index.html                  single-page paper presentation
-│   ├── styles.css                  poster-matching palette (cream / navy / gold)
-│   ├── script.js                   BibTeX copy + on-scroll reveal
-│   └── assets/                     figures copied from visuals/
+├── page/                           static HTML/CSS/JS single-page paper presentation
+│   ├── index.html                  
+│   ├── styles.css                  
+│   ├── script.js                   
+│   └── assets/                     
 │
-└── example-images/                 hand-picked grayscale inputs for quick demos
-    └── *.jpg                       drop these into the Streamlit UI
+└── example-images/                 hand-picked grayscale inputs (selected outside dataset) for quick demos
+    └── *.jpg                       
 
 ```
 
